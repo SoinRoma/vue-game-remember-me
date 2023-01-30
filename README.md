@@ -21,3 +21,9 @@ npm run serve
 ```
 npm run build
 ```
+
+3. Деплой на Github Pages
+
+```
+npm run deploy
+```
