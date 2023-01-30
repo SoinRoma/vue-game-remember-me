@@ -4,6 +4,7 @@
       <BoardItem
         v-for="field in fields"
         :field="field"
+        :preview="preview"
         :key="'item-' + field.id"
       ></BoardItem>
     </div>
@@ -23,6 +24,7 @@ export default {
     BoardItem,
   },
   setup() {
+    let preview = ref(false);
     const number_fields = 25;
     let difficult = ref(3);
     let fields = ref([]);
@@ -45,6 +47,7 @@ export default {
       difficult,
       fields,
       init,
+      preview,
     };
   },
   methods: {
@@ -54,6 +57,7 @@ export default {
     },
 
     prepareGame() {
+      this.preview = true;
       for (let i = 0; i < this.difficult; i++) {
         const index = this.rand(0, this.number_fields - 1);
         if (this.fields[index].value !== 1) {
@@ -62,6 +66,10 @@ export default {
           i--;
         }
       }
+
+      setTimeout(() => {
+        this.preview = false;
+      }, 2000);
     },
 
     rand(min, max) {
