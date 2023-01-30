@@ -1,17 +1,21 @@
 <template>
   <div class="board-wrapper">
     <div class="board">
-      <BoardItem v-for="i in 25" :key="'item-' + i"></BoardItem>
+      <BoardItem
+        v-for="field in fields"
+        :field="field"
+        :key="'item-' + field.id"
+      ></BoardItem>
     </div>
     <p class="difficult">
       Сложность: <strong>{{ difficult }}</strong>
     </p>
-    <button class="btn">Старт</button>
+    <button @click="start" class="btn">Старт</button>
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onBeforeMount } from "vue";
 import BoardItem from "./BoardItem.vue";
 export default {
   name: "board-app",
@@ -19,11 +23,50 @@ export default {
     BoardItem,
   },
   setup() {
-    const difficult = ref(3);
+    const number_fields = 25;
+    let difficult = ref(3);
+    let fields = ref([]);
+
+    const init = () => {
+      fields.value = [];
+      for (let i = 0; i < number_fields; i++) {
+        fields.value.push({
+          id: i,
+          clicked: false, // кликнул или нет ещё
+          value: 0, // пустая клетка, если 1 то значит её нужно найти.
+        });
+      }
+    };
+
+    onBeforeMount(init);
 
     return {
+      number_fields,
       difficult,
+      fields,
+      init,
     };
+  },
+  methods: {
+    start() {
+      this.init();
+      this.prepareGame();
+    },
+
+    prepareGame() {
+      for (let i = 0; i < this.difficult; i++) {
+        const index = this.rand(0, this.number_fields - 1);
+        if (this.fields[index].value !== 1) {
+          this.fields[index].value = 1;
+        } else {
+          i--;
+        }
+      }
+    },
+
+    rand(min, max) {
+      return Math.floor(Math.random() * (max - min)) + min;
+    },
   },
 };
 </script>
