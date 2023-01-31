@@ -4,8 +4,9 @@
       <BoardItem
         v-for="field in fields"
         :field="field"
-        :preview="preview"
+        :gameStatus="gameStatus"
         :key="'item-' + field.id"
+        @selectField="selectField($event)"
       ></BoardItem>
     </div>
     <p class="difficult">
@@ -24,11 +25,11 @@ export default {
     BoardItem,
   },
   setup() {
-    let preview = ref(false);
-    let isDisabled = ref(false);
     const number_fields = 25;
+    let isDisabled = ref(false);
     let difficult = ref(3);
     let fields = ref([]);
+    let gameStatus = ref(0);
 
     const init = () => {
       fields.value = [];
@@ -41,6 +42,16 @@ export default {
       }
     };
 
+    const selectField = (id) => {
+      const index = fields.value.findIndex((field) => {
+        return field.id === id;
+      });
+
+      if (index > -1) {
+        fields.value[index].clicked = true;
+      }
+    };
+
     onBeforeMount(init);
 
     return {
@@ -48,8 +59,9 @@ export default {
       difficult,
       fields,
       init,
-      preview,
+      selectField,
       isDisabled,
+      gameStatus,
     };
   },
   methods: {
@@ -59,8 +71,8 @@ export default {
     },
 
     prepareGame() {
-      this.preview = true;
       this.isDisabled = true;
+      this.gameStatus = 1;
       for (let i = 0; i < this.difficult; i++) {
         const index = this.rand(0, this.number_fields - 1);
         if (this.fields[index].value !== 1) {
@@ -71,7 +83,7 @@ export default {
       }
 
       setTimeout(() => {
-        this.preview = false;
+        this.gameStatus = 2;
         this.isDisabled = false;
       }, 2000);
     },
@@ -106,5 +118,9 @@ export default {
 
 .btn:hover {
   background: #42b983;
+}
+
+.btn:disabled {
+  opacity: 0.5;
 }
 </style>

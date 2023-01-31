@@ -1,7 +1,14 @@
 <template>
   <span
-    :class="'item ' + (field.value === 1 && preview ? 'item-active' : '')"
-  ></span>
+    @click="select(field.id)"
+    class="item"
+    :class="
+      (field.value === 1 && gameStatus === 1) || field.clicked
+        ? 'item-active'
+        : ''
+    "
+  >
+  </span>
 </template>
 
 <script>
@@ -11,10 +18,16 @@ export default {
       type: Object,
       required: true,
     },
-    preview: {
-      type: Boolean,
+    gameStatus: {
+      type: Number,
       required: false,
-      default: false,
+    },
+  },
+  methods: {
+    select(id) {
+      if (this.gameStatus === 2) {
+        this.$emit("selectField", id);
+      }
     },
   },
 };
