@@ -11,7 +11,7 @@
     <p class="difficult">
       Сложность: <strong>{{ difficult }}</strong>
     </p>
-    <button @click="start" class="btn">Старт</button>
+    <button @click="start" :disabled="isDisabled" class="btn">Старт</button>
   </div>
 </template>
 
@@ -25,6 +25,7 @@ export default {
   },
   setup() {
     let preview = ref(false);
+    let isDisabled = ref(false);
     const number_fields = 25;
     let difficult = ref(3);
     let fields = ref([]);
@@ -48,6 +49,7 @@ export default {
       fields,
       init,
       preview,
+      isDisabled,
     };
   },
   methods: {
@@ -58,6 +60,7 @@ export default {
 
     prepareGame() {
       this.preview = true;
+      this.isDisabled = true;
       for (let i = 0; i < this.difficult; i++) {
         const index = this.rand(0, this.number_fields - 1);
         if (this.fields[index].value !== 1) {
@@ -69,6 +72,7 @@ export default {
 
       setTimeout(() => {
         this.preview = false;
+        this.isDisabled = false;
       }, 2000);
     },
 
