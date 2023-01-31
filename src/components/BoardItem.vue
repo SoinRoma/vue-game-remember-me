@@ -1,17 +1,10 @@
 <template>
-  <span
-    @click="select(field.id)"
-    class="item"
-    :class="
-      (field.value === 1 && gameStatus === 1) || field.clicked
-        ? 'item-active'
-        : ''
-    "
-  >
-  </span>
+  <span @click="select(field.id)" :class="getClasses"> </span>
 </template>
 
 <script>
+import { computed } from "vue";
+
 export default {
   props: {
     field: {
@@ -22,6 +15,28 @@ export default {
       type: Number,
       required: false,
     },
+  },
+  setup(props) {
+    const getClasses = computed(() => {
+      let classes = "item ";
+
+      if (
+        (props.field.value === 1 && props.gameStatus === 1) ||
+        (props.field.clicked && props.field.value === 1)
+      ) {
+        classes += "item-active";
+      }
+
+      if (props.field.clicked && props.field.value === 0) {
+        classes += "item-wrong";
+      }
+
+      return classes;
+    });
+
+    return {
+      getClasses,
+    };
   },
   methods: {
     select(id) {
@@ -48,6 +63,11 @@ export default {
 
 .item-active {
   background: #42b983cc;
+  transform: rotateX(180deg);
+}
+
+.item-wrong {
+  background: #9f330fcc;
   transform: rotateX(180deg);
 }
 </style>

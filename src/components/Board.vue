@@ -30,6 +30,7 @@ export default {
     let difficult = ref(3);
     let fields = ref([]);
     let gameStatus = ref(0);
+    let game_speed = 2000;
 
     const init = () => {
       fields.value = [];
@@ -42,14 +43,79 @@ export default {
       }
     };
 
+    const start = () => {
+      init();
+      prepareGame();
+    };
+
+    const prepareGame = () => {
+      isDisabled.value = true;
+      gameStatus.value = 1;
+      for (let i = 0; i < difficult.value; i++) {
+        const index = rand(0, number_fields - 1);
+        if (fields.value[index].value !== 1) {
+          fields.value[index].value = 1;
+        } else {
+          i--;
+        }
+      }
+
+      setTimeout(() => {
+        gameStatus.value = 2;
+        isDisabled.value = false;
+      }, game_speed);
+    };
+
+    const rand = (min, max) => {
+      return Math.floor(Math.random() * (max - min)) + min;
+    };
+
     const selectField = (id) => {
       const index = fields.value.findIndex((field) => {
         return field.id === id;
       });
 
-      if (index > -1) {
+      if (index > -1 && !fields.value[index].clicked) {
         fields.value[index].clicked = true;
+        checkGame();
       }
+    };
+
+    const checkGame = () => {
+      const errorIndex = fields.value.findIndex((field) => {
+        return field.clicked && field.value === 0;
+      });
+
+      if (errorIndex > -1) {
+        setGameOver();
+        return;
+      }
+
+      const notFoundItemIndex = fields.value.findIndex((field) => {
+        return !field.clicked && field.value === 1;
+      });
+
+      if (notFoundItemIndex === -1) {
+        setWin();
+      }
+    };
+
+    const setGameOver = () => {
+      gameStatus.value = 4;
+      setTimeout(() => {
+        difficult.value = 3;
+      }, game_speed);
+    };
+
+    const setWin = () => {
+      gameStatus.value = 3;
+      setTimeout(() => {
+        difficult.value += 1;
+        if (difficult.value > 10) {
+          difficult.value = 10;
+        }
+        start();
+      }, game_speed);
     };
 
     onBeforeMount(init);
@@ -58,39 +124,13 @@ export default {
       number_fields,
       difficult,
       fields,
-      init,
-      selectField,
       isDisabled,
       gameStatus,
+      game_speed,
+      init,
+      start,
+      selectField,
     };
-  },
-  methods: {
-    start() {
-      this.init();
-      this.prepareGame();
-    },
-
-    prepareGame() {
-      this.isDisabled = true;
-      this.gameStatus = 1;
-      for (let i = 0; i < this.difficult; i++) {
-        const index = this.rand(0, this.number_fields - 1);
-        if (this.fields[index].value !== 1) {
-          this.fields[index].value = 1;
-        } else {
-          i--;
-        }
-      }
-
-      setTimeout(() => {
-        this.gameStatus = 2;
-        this.isDisabled = false;
-      }, 2000);
-    },
-
-    rand(min, max) {
-      return Math.floor(Math.random() * (max - min)) + min;
-    },
   },
 };
 </script>
